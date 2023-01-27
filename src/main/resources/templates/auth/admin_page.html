@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -7,7 +8,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <title>User</title>
+    <title>Users</title>
 </head>
 <body>
 <div>
@@ -17,18 +18,37 @@
             <th scope="col">ID</th>
             <th scope="col">First Name</th>
             <th scope="col">Second Name</th>
+            <th scope="col">Age</th>
             <th scope="col">EMail</th>
+            <th scope="col">Roles</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Delete</th>
         </tr>
         </thead>
         <tbody>
-        <tr>
+        <tr th:each="user : ${users}">
             <td th:text="${user.getId()}"/>
             <td th:text="${user.getFirstName()}"/>
             <td th:text="${user.getLastName()}"/>
+            <td th:text="${user.getAge()}"/>
             <td th:text="${user.getUsername()}"/>
+            <td th:text="${user.listOfRoles()}"/>
+            <td>
+                <a th:href="@{/admin_page/{username} (username=${user.getUsername()})}">
+                    <button type="button" class="btn btn-success">Edit User</button>
+                </a>
+            </td>
+            <td>
+                <form th:method="DELETE" th:action="@{/admin_page/{username} (username=${user.getUsername()})}">
+                    <input type="submit" class="btn btn-danger" value="Delete">
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>
+    <form action="/new" target="_blank">
+        <button class="btn btn-primary">New User</button>
+    </form>
     <a th:href="@{/login}">
         <button type="button" class="btn btn-primary">Logout</button>
     </a>
