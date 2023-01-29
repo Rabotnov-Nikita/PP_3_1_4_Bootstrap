@@ -142,4 +142,13 @@ public class User implements UserDetails {
         }
         return String.valueOf(listOfRoles);
     }
+
+    public boolean hasRole(String roleName) {
+        if (roles.stream()
+                .map(Role::getName)
+                .anyMatch(r -> r.equals(roleName))) {
+            return true;
+        }
+        return false;
+    }
 }

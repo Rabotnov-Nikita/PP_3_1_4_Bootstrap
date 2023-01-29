@@ -1,5 +1,7 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,6 +12,7 @@ import ru.kata.spring.boot_security.demo.services.UserService;
 import ru.kata.spring.boot_security.demo.util.UserValidator;
 
 import javax.validation.Valid;
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/admin_page")
@@ -26,28 +29,31 @@ public class AdminController {
     }
 
     @GetMapping()
-    public String adminPage(Model model) {
+    public String adminPage(@AuthenticationPrincipal UserDetails user, Model model, Principal principal) {
+        model.addAttribute("currentUser", userService.getUserByUserName(user.getUsername()));
         model.addAttribute("users", userService.getAllUsers());
         model.addAttribute("roles", roleService.getAllRoles());
-        return "auth/admin_page";
+        return "auth/admin_page_";
     }
 
 
     @GetMapping("/newUser")
-    public String newUser(Model model) {
+    public String newUser(@AuthenticationPrincipal UserDetails user, Model model) {
+        model.addAttribute("currentUser", userService.getUserByUserName(user.getUsername()));
         model.addAttribute("user", new User());
         model.addAttribute("roles", roleService.getAllRoles());
-        return "auth/new";
+        return "auth/new_";
     }
 
     @PostMapping()
-    public String createUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, Model model) {
-        userValidator.validate(user, bindingResult);
+    public String createUser(@ModelAttribute("user") @Valid User newUser, BindingResult bindingResult, Model model, @AuthenticationPrincipal UserDetails user) {
+        userValidator.validate(newUser, bindingResult);
         if (bindingResult.hasErrors()) {
+            model.addAttribute("currentUser", userService.getUserByUserName(user.getUsername()));
             model.addAttribute("roles", roleService.getAllRoles());
-            return "auth/new";
+            return "auth/new_";
         }
-        userService.addUser(user);
+        userService.addUser(newUser);
         return "redirect:/admin_page";
     }
 
