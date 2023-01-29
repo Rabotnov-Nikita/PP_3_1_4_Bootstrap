@@ -10,9 +10,9 @@ import ru.kata.spring.boot_security.demo.services.UserService;
 import ru.kata.spring.boot_security.demo.util.UserValidator;
 
 import javax.validation.Valid;
-import java.security.Principal;
 
 @Controller
+@RequestMapping("/admin_page")
 public class AdminController {
 
     private UserValidator userValidator;
@@ -25,7 +25,7 @@ public class AdminController {
         this.roleService = roleService;
     }
 
-    @GetMapping("/admin_page")
+    @GetMapping()
     public String adminPage(Model model) {
         model.addAttribute("users", userService.getAllUsers());
         model.addAttribute("roles", roleService.getAllRoles());
@@ -33,14 +33,14 @@ public class AdminController {
     }
 
 
-    @GetMapping("/admin_page/newUser")
+    @GetMapping("/newUser")
     public String newUser(Model model) {
         model.addAttribute("user", new User());
         model.addAttribute("roles", roleService.getAllRoles());
         return "auth/new";
     }
 
-    @PostMapping("/admin_page")
+    @PostMapping()
     public String createUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, Model model) {
         userValidator.validate(user, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -51,13 +51,13 @@ public class AdminController {
         return "redirect:/admin_page";
     }
 
-    @DeleteMapping("/admin_page/{username}")
+    @DeleteMapping("/{username}")
     public String deleteUser(@PathVariable("username") String username) {
         userService.deleteUser(username);
         return "redirect:/admin_page";
     }
 
-    @GetMapping("admin_page/{username}")
+    @GetMapping("/{username}")
     public String editUser(@PathVariable("username") String username, Model model) {
 
         model.addAttribute("user", userService.getUserByUserName(username).get());
@@ -65,7 +65,7 @@ public class AdminController {
         return "/auth/edit";
 
     }
-    @PatchMapping("/admin_page/{username}")
+    @PatchMapping("/{username}")
     public String updateUser(@ModelAttribute("user") User user, @PathVariable("username") String username) {
         userService.updateUser(username, user);
         return "redirect:/admin_page";
